@@ -1,4 +1,5 @@
 import { Component, createSignal, createResource, For, Show } from 'solid-js';
+import Header from './components/Header';
 
 const API_URL = 'http://localhost:3001';
 
@@ -86,19 +87,8 @@ const App: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-gray-100 flex items-center justify-center flex-col">
-      <div class="w-full bg-blue-600 py-4 px-8 flex items-center justify-between fixed top-0 left-0 z-50">
-        <span class="text-white text-xl font-bold">Todo App</span>
-        <Show when={token()}>
-          <button
-            onClick={handleLogout}
-            class="text-sm text-white hover:underline"
-          >
-            ログアウト
-          </button>
-        </Show>
-      </div>
-      <div class="h-16" />
+    <div class="min-h-screen bg-gray-100 flex items-center justify-center flex-col pt-16">
+      <Header token={token()} handleLogout={handleLogout} />
       <Show when={token()} fallback={
         <form onSubmit={handleLogin} class="bg-white shadow-lg rounded-lg p-8 w-full max-w-sm flex flex-col gap-4 mt-8">
           <h2 class="text-xl font-bold text-center text-blue-600 mb-4">ログイン</h2>
