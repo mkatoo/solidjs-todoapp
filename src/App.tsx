@@ -89,7 +89,7 @@ const App: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-gray-100 flex items-center justify-center flex-col pt-16">
+    <div class="min-h-screen bg-gray-100 flex items-center flex-col pt-16">
       <Header token={token()} handleLogout={handleLogout} />
       <Show when={token()} fallback={
         <LoginForm
