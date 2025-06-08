@@ -1,5 +1,6 @@
 import { Component, createSignal, createResource, For, Show } from 'solid-js';
 import Header from './components/Header';
+import LoginForm from './components/LoginForm';
 
 const API_URL = 'http://localhost:3001';
 
@@ -90,31 +91,13 @@ const App: Component = () => {
     <div class="min-h-screen bg-gray-100 flex items-center justify-center flex-col pt-16">
       <Header token={token()} handleLogout={handleLogout} />
       <Show when={token()} fallback={
-        <form onSubmit={handleLogin} class="bg-white shadow-lg rounded-lg p-8 w-full max-w-sm flex flex-col gap-4 mt-8">
-          <h2 class="text-xl font-bold text-center text-blue-600 mb-4">ログイン</h2>
-          <input
-            type="email"
-            value={email()}
-            onInput={e => setEmail(e.currentTarget.value)}
-            placeholder="メールアドレス"
-            class="border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          />
-          <input
-            type="password"
-            value={password()}
-            onInput={e => setPassword(e.currentTarget.value)}
-            placeholder="パスワード"
-            class="border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          />
-          <button
-            type="submit"
-            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-          >
-            ログイン
-          </button>
-        </form>
+        <LoginForm
+          email={email()}
+          password={password()}
+          setEmail={setEmail}
+          setPassword={setPassword}
+          handleLogin={handleLogin}
+        />
       }>
         <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md mt-8">
           <form onSubmit={handleAdd} class="flex gap-2 mb-6">
