@@ -11,6 +11,17 @@ export async function login(email: string, password: string) {
   return res.json();
 }
 
+export async function register(name: string, email: string, password: string) {
+  const url = `${API_URL}/users`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password }),
+  });
+  if (!res.ok) throw new Error('登録失敗');
+  return res.json();
+}
+
 export async function fetchTasks(token: string) {
   const url = `${API_URL}/tasks`;
   const res = await fetch(url, {
