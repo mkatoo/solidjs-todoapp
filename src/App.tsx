@@ -1,6 +1,7 @@
 import { Component, createSignal, createResource, For, Show } from 'solid-js';
 import Header from './components/Header';
 import LoginForm from './components/LoginForm';
+import TaskList from './components/TaskList';
 
 const API_URL = 'http://localhost:3001';
 
@@ -99,37 +100,13 @@ const App: Component = () => {
           handleLogin={handleLogin}
         />
       }>
-        <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md mt-8">
-          <form onSubmit={handleAdd} class="flex gap-2 mb-6">
-            <input
-              value={content()}
-              onInput={e => setContent(e.currentTarget.value)}
-              placeholder="新しいタスクを入力"
-              class="flex-1 border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            <button
-              type="submit"
-              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-            >
-              追加
-            </button>
-          </form>
-          <ul class="space-y-2">
-            <For each={tasks()}>
-              {(task: any) => (
-                <li class="flex items-center justify-between bg-gray-50 px-4 py-2 rounded shadow-sm">
-                  <span>{task.content}</span>
-                  <button
-                    onClick={() => handleDelete(task.id)}
-                    class="text-sm text-red-500 hover:underline"
-                  >
-                    削除
-                  </button>
-                </li>
-              )}
-            </For>
-          </ul>
-        </div>
+        <TaskList
+          content={content()}
+          setContent={setContent}
+          tasks={tasks()}
+          handleAdd={handleAdd}
+          handleDelete={handleDelete}
+        />
       </Show>
     </div>
   );
