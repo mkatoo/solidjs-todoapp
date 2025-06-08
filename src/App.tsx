@@ -86,9 +86,21 @@ const App: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div class="min-h-screen bg-gray-100 flex items-center justify-center flex-col">
+      <div class="w-full bg-blue-600 py-4 px-8 flex items-center justify-between fixed top-0 left-0 z-50">
+        <span class="text-white text-xl font-bold">Todo App</span>
+        <Show when={token()}>
+          <button
+            onClick={handleLogout}
+            class="text-sm text-white hover:underline"
+          >
+            ログアウト
+          </button>
+        </Show>
+      </div>
+      <div class="h-16" />
       <Show when={token()} fallback={
-        <form onSubmit={handleLogin} class="bg-white shadow-lg rounded-lg p-8 w-full max-w-sm flex flex-col gap-4">
+        <form onSubmit={handleLogin} class="bg-white shadow-lg rounded-lg p-8 w-full max-w-sm flex flex-col gap-4 mt-8">
           <h2 class="text-xl font-bold text-center text-blue-600 mb-4">ログイン</h2>
           <input
             type="email"
@@ -114,16 +126,7 @@ const App: Component = () => {
           </button>
         </form>
       }>
-        <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-          <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-blue-600">Todo App</h1>
-            <button
-              onClick={handleLogout}
-              class="text-sm text-gray-500 hover:underline"
-            >
-              ログアウト
-            </button>
-          </div>
+        <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md mt-8">
           <form onSubmit={handleAdd} class="flex gap-2 mb-6">
             <input
               value={content()}
