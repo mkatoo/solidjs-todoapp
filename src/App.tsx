@@ -1,97 +1,160 @@
-import { Component, createSignal, createResource, For } from 'solid-js';
+import { Component, createSignal, createResource, For, Show } from 'solid-js';
 
 const API_URL = 'http://localhost:3001';
 
-const user = {
-  email: "mkatoo@example.com",
-  password: "password",
-  token: "0f7a0407-b3cd-47f4-83fe-812ab509f444",
-};
+async function login(email: string, password: string) {
+  const url = `${API_URL}/auth`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) throw new Error('ログイン失敗');
+  return res.json();
+}
 
-async function fetchTasks() {
+async function fetchTasks(token: string) {
   const url = `${API_URL}/tasks`;
   const res = await fetch(url, {
     headers: {
-      'Authorization': `Bearer ${user.token}`,
+      'Authorization': `Bearer ${token}`,
     },
   });
   return res.json();
 }
 
-async function addTask(content: string) {
+async function addTask(token: string, content: string) {
   const url = `${API_URL}/tasks`;
   const res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${user.token}`,
+      'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify({ content }),
   });
   return res.json();
 }
 
-async function deleteTask(id: number) {
+async function deleteTask(token: string, id: number) {
   const url = `${API_URL}/tasks/${id}`;
   await fetch(url, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${user.token}`,
+      'Authorization': `Bearer ${token}`,
     },
   });
 }
 
 const App: Component = () => {
+  const [token, setToken] = createSignal<string | null>(null);
+  const [email, setEmail] = createSignal('');
+  const [password, setPassword] = createSignal('');
   const [content, setContent] = createSignal('');
-  const [tasks, { refetch }] = createResource(fetchTasks);
+  const [tasks, { refetch }] = createResource(token, fetchTasks);
+
+  const handleLogin = async (e: Event) => {
+    e.preventDefault();
+    try {
+      const res = await login(email(), password());
+      setToken(res.token);
+      refetch();
+    } catch {
+      alert('ログインに失敗しました');
+    }
+  };
+
+  const handleLogout = () => {
+    setToken(null);
+    setEmail('');
+    setPassword('');
+    setContent('');
+  };
 
   const handleAdd = async (e: Event) => {
     e.preventDefault();
-    if (!content().trim()) return;
-    await addTask(content());
+    if (!content().trim() || !token()) return;
+    await addTask(token()!, content());
     setContent('');
     refetch();
   };
 
   const handleDelete = async (id: number) => {
-    await deleteTask(id);
+    if (!token()) return;
+    await deleteTask(token()!, id);
     refetch();
   };
 
   return (
-    <div class="min-h-screen bg-gray-100 flex justify-center">
-      <div class="rounded-lg p-8 w-full max-w-md">
-        <h1 class="text-2xl font-bold mb-6 text-center text-blue-600">Todo App</h1>
-        <form onSubmit={handleAdd} class="flex gap-2 mb-6">
+    <div class="min-h-screen bg-gray-100 flex items-center justify-center">
+      <Show when={token()} fallback={
+        <form onSubmit={handleLogin} class="bg-white shadow-lg rounded-lg p-8 w-full max-w-sm flex flex-col gap-4">
+          <h2 class="text-xl font-bold text-center text-blue-600 mb-4">ログイン</h2>
           <input
-            value={content()}
-            onInput={e => setContent(e.currentTarget.value)}
-            placeholder="新しいタスクを入力"
-            class="flex-1 border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            type="email"
+            value={email()}
+            onInput={e => setEmail(e.currentTarget.value)}
+            placeholder="メールアドレス"
+            class="border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+          <input
+            type="password"
+            value={password()}
+            onInput={e => setPassword(e.currentTarget.value)}
+            placeholder="パスワード"
+            class="border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
           />
           <button
             type="submit"
             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
           >
-            追加
+            ログイン
           </button>
         </form>
-        <ul class="space-y-2">
-          <For each={tasks()}>
-            {(task: any) => (
-              <li class="flex items-center justify-between bg-white px-4 py-2 rounded shadow-sm">
-                <span>{task.content}</span>
-                <button
-                  onClick={() => handleDelete(task.id)}
-                  class="text-sm text-red-500 hover:underline"
-                >
-                  削除
-                </button>
-              </li>
-            )}
-          </For>
-        </ul>
-      </div>
+      }>
+        <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+          <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-blue-600">Todo App</h1>
+            <button
+              onClick={handleLogout}
+              class="text-sm text-gray-500 hover:underline"
+            >
+              ログアウト
+            </button>
+          </div>
+          <form onSubmit={handleAdd} class="flex gap-2 mb-6">
+            <input
+              value={content()}
+              onInput={e => setContent(e.currentTarget.value)}
+              placeholder="新しいタスクを入力"
+              class="flex-1 border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+            >
+              追加
+            </button>
+          </form>
+          <ul class="space-y-2">
+            <For each={tasks()}>
+              {(task: any) => (
+                <li class="flex items-center justify-between bg-gray-50 px-4 py-2 rounded shadow-sm">
+                  <span>{task.content}</span>
+                  <button
+                    onClick={() => handleDelete(task.id)}
+                    class="text-sm text-red-500 hover:underline"
+                  >
+                    削除
+                  </button>
+                </li>
+              )}
+            </For>
+          </ul>
+        </div>
+      </Show>
     </div>
   );
 };
