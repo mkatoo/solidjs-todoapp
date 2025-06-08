@@ -1,53 +1,8 @@
-import { Component, createSignal, createResource, For, Show } from 'solid-js';
+import { Component, createSignal, createResource, Show } from 'solid-js';
 import Header from './components/Header';
 import LoginForm from './components/LoginForm';
 import TaskList from './components/TaskList';
-
-const API_URL = 'http://localhost:3001';
-
-async function login(email: string, password: string) {
-  const url = `${API_URL}/auth`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!res.ok) throw new Error('ログイン失敗');
-  return res.json();
-}
-
-async function fetchTasks(token: string) {
-  const url = `${API_URL}/tasks`;
-  const res = await fetch(url, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-  return res.json();
-}
-
-async function addTask(token: string, content: string) {
-  const url = `${API_URL}/tasks`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify({ content }),
-  });
-  return res.json();
-}
-
-async function deleteTask(token: string, id: number) {
-  const url = `${API_URL}/tasks/${id}`;
-  await fetch(url, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-}
+import { login, fetchTasks, addTask, deleteTask } from './api';
 
 const App: Component = () => {
   const [token, setToken] = createSignal<string | null>(null);
