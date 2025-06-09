@@ -15,7 +15,7 @@ const RegisterForm: Component<Props> = (props) => (
 		onSubmit={props.handleRegister}
 		class="bg-white shadow-md rounded-xl px-8 py-10 w-full max-w-md flex flex-col gap-6 mx-auto mt-10"
 	>
-		<h2 class="text-2xl font-bold text-center text-blue-600 mb-4 tracking-tight">
+		<h2 class="text-xl font-bold text-center text-blue-600 mb-4">
 			ユーザー登録
 		</h2>
 		<div class="flex flex-col gap-2">
