@@ -15,17 +15,14 @@ const RegisterForm: Component<Props> = (props) => {
 	const handleRegister = async (e: Event) => {
 		e.preventDefault();
 		try {
-			await register(name(), email(), password());
-			alert("登録が完了しました。ログインしてください。");
+			const res = await register(name(), email(), password());
+			alert("登録が完了しました。");
+			props.setToken(res.token);
 			props.setShowRegister(false);
 		} catch {
 			alert("登録に失敗しました。");
 			props.setShowRegister(true);
-			return;
 		}
-		setName("");
-		setEmail("");
-		setPassword("");
 	};
 
 	return (
