@@ -1,17 +1,26 @@
 import { type Component, For } from "solid-js";
 import { createResource, createSignal } from "solid-js";
 import { addTask, deleteTask, fetchTasks } from "../api";
+import Header from "./Header";
+import { useNavigate } from "@solidjs/router";
 
 type Task = {
 	id: number;
 	content: string;
 };
 
-type Props = {
+type TaskListProps = {
 	token: () => string;
+	setToken: (token: string) => void;
 };
 
-const TaskList: Component<Props> = (props) => {
+const TaskList: Component<TaskListProps> = (props) => {
+	const navigate = useNavigate();
+	if (!props.token()) {
+		navigate("/login", { replace: true });
+		return;
+	}
+
 	const [content, setContent] = createSignal("");
 	const [tasks, { refetch }] = createResource(props.token, fetchTasks);
 
@@ -30,37 +39,40 @@ const TaskList: Component<Props> = (props) => {
 	};
 
 	return (
-		<div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md mt-8">
-			<form onSubmit={handleAdd} class="flex gap-2 mb-6">
-				<input
-					value={content()}
-					onInput={(e) => setContent(e.currentTarget.value)}
-					placeholder="新しいタスクを入力"
-					class="flex-1 border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-				/>
-				<button
-					type="submit"
-					class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-				>
-					追加
-				</button>
-			</form>
-			<ul class="space-y-2">
-				<For each={tasks()}>
-					{(task: Task) => (
-						<li class="flex items-center justify-between bg-gray-50 px-4 py-2 rounded shadow-sm">
-							<span>{task.content}</span>
-							<button
-								type="button"
-								onClick={() => handleDelete(task.id)}
-								class="text-sm text-red-500 hover:underline"
-							>
-								削除
-							</button>
-						</li>
-					)}
-				</For>
-			</ul>
+		<div class="min-h-screen bg-gray-100 flex items-center flex-col pt-16">
+			<Header token={props.token} setToken={props.setToken} />
+			<div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md mt-8">
+				<form onSubmit={handleAdd} class="flex gap-2 mb-6">
+					<input
+						value={content()}
+						onInput={(e) => setContent(e.currentTarget.value)}
+						placeholder="新しいタスクを入力"
+						class="flex-1 border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+					/>
+					<button
+						type="submit"
+						class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+					>
+						追加
+					</button>
+				</form>
+				<ul class="space-y-2">
+					<For each={tasks()}>
+						{(task: Task) => (
+							<li class="flex items-center justify-between bg-gray-50 px-4 py-2 rounded shadow-sm">
+								<span>{task.content}</span>
+								<button
+									type="button"
+									onClick={() => handleDelete(task.id)}
+									class="text-sm text-red-500 hover:underline"
+								>
+									削除
+								</button>
+							</li>
+						)}
+					</For>
+				</ul>
+			</div>
 		</div>
 	);
 };
