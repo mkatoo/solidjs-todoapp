@@ -13,6 +13,7 @@ const RegisterForm: Component<RegisterFormProps> = (props) => {
 	const [name, setName] = createSignal("");
 	const [email, setEmail] = createSignal("");
 	const [password, setPassword] = createSignal("");
+	const [error, setError] = createSignal<string | null>(null);
 	const navigate = useNavigate();
 
 	const handleRegister = async (e: Event) => {
@@ -21,15 +22,29 @@ const RegisterForm: Component<RegisterFormProps> = (props) => {
 			const res = await register(name(), email(), password());
 			alert("登録が完了しました。");
 			props.setToken(res.token);
+			setError(null);
 			navigate("/", { replace: true });
 		} catch {
-			alert("登録に失敗しました。");
+			setError("登録に失敗しました。");
 		}
 	};
 
 	return (
 		<div class="min-h-screen bg-gray-100 flex items-center flex-col pt-16">
 			<Header token={props.token} setToken={props.setToken} />
+			{error() && (
+				<div class="border border-red-400 bg-red-50 text-red-500 p-6 rounded mt-4 mb-4 flex items-center">
+					<div class="flex-1">{error()}</div>
+					<button
+						class="ml-4 text-red-400 hover:text-red-600 text-xl cursor-pointer"
+						aria-label="閉じる"
+						onClick={() => setError(null)}
+						type="button"
+					>
+						✕
+					</button>
+				</div>
+			)}
 			<form
 				onSubmit={handleRegister}
 				class="bg-white shadow-md rounded-xl px-8 py-10 w-full max-w-md flex flex-col gap-6 mx-auto mt-10"

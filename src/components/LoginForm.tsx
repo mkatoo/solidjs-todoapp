@@ -12,6 +12,7 @@ type LoginFormProps = {
 const LoginForm: Component<LoginFormProps> = (props) => {
 	const [email, setEmail] = createSignal("");
 	const [password, setPassword] = createSignal("");
+	const [error, setError] = createSignal<string | null>(null);
 	const navigate = useNavigate();
 
 	const handleLogin = async (e: Event) => {
@@ -19,15 +20,29 @@ const LoginForm: Component<LoginFormProps> = (props) => {
 		try {
 			const res = await login(email(), password());
 			props.setToken(res.token);
+			setError(null);
 			navigate("/", { replace: true });
 		} catch {
-			alert("ログインに失敗しました");
+			setError("ログインに失敗しました");
 		}
 	};
 
 	return (
 		<div class="min-h-screen bg-gray-100 flex items-center flex-col pt-16">
 			<Header token={props.token} setToken={props.setToken} />
+			{error() && (
+				<div class="border border-red-400 bg-red-50 text-red-500 p-6 rounded mt-4 mb-4 flex items-center">
+					<div class="flex-1">{error()}</div>
+					<button
+						class="ml-4 text-red-400 hover:text-red-600 text-xl cursor-pointer"
+						aria-label="閉じる"
+						onClick={() => setError(null)}
+						type="button"
+					>
+						✕
+					</button>
+				</div>
+			)}
 			<form
 				onSubmit={handleLogin}
 				class="bg-white shadow-md rounded-xl px-8 py-10 w-full max-w-md flex flex-col gap-6 mx-auto mt-10"
