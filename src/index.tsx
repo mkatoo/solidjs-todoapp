@@ -1,12 +1,12 @@
+import { Route, Router } from "@solidjs/router";
 /* @refresh reload */
 import { render } from "solid-js/web";
-import { Router, Route } from "@solidjs/router";
-import { createSignal } from "solid-js";
 
 import "./index.css";
-import TaskList from "./components/TaskList";
+import { token, updateToken } from "./auth";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
+import TaskList from "./components/TaskList";
 
 const root = document.getElementById("root");
 
@@ -16,23 +16,23 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 	);
 }
 
-const [token, setToken] = createSignal("");
-
 if (root) {
 	render(
 		() => (
 			<Router>
 				<Route
 					path="/"
-					component={() => <TaskList token={token} setToken={setToken} />}
+					component={() => <TaskList token={token} setToken={updateToken} />}
 				/>
 				<Route
 					path="/login"
-					component={() => <LoginForm token={token} setToken={setToken} />}
+					component={() => <LoginForm token={token} setToken={updateToken} />}
 				/>
 				<Route
 					path="/register"
-					component={() => <RegisterForm token={token} setToken={setToken} />}
+					component={() => (
+						<RegisterForm token={token} setToken={updateToken} />
+					)}
 				/>
 			</Router>
 		),

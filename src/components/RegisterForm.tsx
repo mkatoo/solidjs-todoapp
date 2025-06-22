@@ -1,7 +1,7 @@
+import { useNavigate } from "@solidjs/router";
 import type { Component } from "solid-js";
 import { createSignal } from "solid-js";
 import { register } from "../api";
-import { useNavigate } from "@solidjs/router";
 import Header from "./Header";
 
 type RegisterFormProps = {

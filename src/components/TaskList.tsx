@@ -1,8 +1,8 @@
+import { useNavigate } from "@solidjs/router";
 import { type Component, For } from "solid-js";
 import { createResource, createSignal } from "solid-js";
 import { addTask, deleteTask, fetchTasks } from "../api";
 import Header from "./Header";
-import { useNavigate } from "@solidjs/router";
 
 type Task = {
 	id: number;
