@@ -76,7 +76,7 @@ const TaskList: Component<TaskListProps> = (props) => {
 					/>
 					<button
 						type="submit"
-						class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+						class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition cursor-pointer"
 					>
 						追加
 					</button>
@@ -89,7 +89,7 @@ const TaskList: Component<TaskListProps> = (props) => {
 								<button
 									type="button"
 									onClick={() => handleDelete(task.id)}
-									class="text-sm text-red-500 hover:underline"
+									class="text-sm text-red-500 hover:underline cursor-pointer"
 								>
 									削除
 								</button>
