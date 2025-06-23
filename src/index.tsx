@@ -7,6 +7,7 @@ import { token, updateToken } from "./auth";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 import TaskList from "./components/TaskList";
+import UserProfile from "./components/UserProfile";
 
 const root = document.getElementById("root");
 
@@ -33,6 +34,10 @@ if (root) {
 					component={() => (
 						<RegisterForm token={token} setToken={updateToken} />
 					)}
+				/>
+				<Route
+					path="/profile"
+					component={() => <UserProfile token={token} setToken={updateToken} />}
 				/>
 			</Router>
 		),

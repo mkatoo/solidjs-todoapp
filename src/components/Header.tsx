@@ -24,13 +24,22 @@ const Header: Component<HeaderProps> = (props) => {
 				Todo App
 			</button>
 			<Show when={props.token()}>
-				<button
-					type="button"
-					onClick={handleLogout}
-					class="text-sm text-white hover:underline cursor-pointer"
-				>
-					ログアウト
-				</button>
+				<div class="flex items-center space-x-4">
+					<button
+						type="button"
+						onClick={() => navigate("/profile", { replace: true })}
+						class="text-sm text-white hover:underline cursor-pointer"
+					>
+						プロフィール
+					</button>
+					<button
+						type="button"
+						onClick={handleLogout}
+						class="text-sm text-white hover:underline cursor-pointer"
+					>
+						ログアウト
+					</button>
+				</div>
 			</Show>
 		</div>
 	);

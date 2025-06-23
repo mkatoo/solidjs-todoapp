@@ -54,3 +54,14 @@ export async function deleteTask(token: string, id: number) {
 		},
 	});
 }
+
+export async function fetchUserInfo(token: string) {
+	const url = `${API_URL}/users/me`;
+	const res = await fetch(url, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	if (!res.ok) throw new Error("ユーザー情報の取得に失敗しました");
+	return res.json();
+}
