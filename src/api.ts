@@ -65,3 +65,17 @@ export async function fetchUserInfo(token: string) {
 	if (!res.ok) throw new Error("ユーザー情報の取得に失敗しました");
 	return res.json();
 }
+
+export async function updateUserProfile(token: string, name: string) {
+	const url = `${API_URL}/users/me`;
+	const res = await fetch(url, {
+		method: "PATCH",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({ name }),
+	});
+	if (!res.ok) throw new Error("ユーザー情報の更新に失敗しました");
+	return res.json();
+}

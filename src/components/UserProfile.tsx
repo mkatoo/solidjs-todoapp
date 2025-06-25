@@ -1,6 +1,12 @@
 import { useNavigate } from "@solidjs/router";
-import { type Component, Show, Suspense, createResource } from "solid-js";
-import { fetchUserInfo } from "../api";
+import {
+	type Component,
+	Show,
+	Suspense,
+	createResource,
+	createSignal,
+} from "solid-js";
+import { fetchUserInfo, updateUserProfile } from "../api";
 import Header from "./Header";
 
 type UserProfileProps = {
@@ -16,7 +22,51 @@ const UserProfile: Component<UserProfileProps> = (props) => {
 		return null;
 	}
 
-	const [user] = createResource(() => props.token(), fetchUserInfo);
+	const [user, { refetch }] = createResource(
+		() => props.token(),
+		fetchUserInfo,
+	);
+	const [isEditing, setIsEditing] = createSignal(false);
+	const [editName, setEditName] = createSignal("");
+	const [isUpdating, setIsUpdating] = createSignal(false);
+	const [updateMessage, setUpdateMessage] = createSignal("");
+
+	const handleEdit = () => {
+		const userData = user();
+		if (userData) {
+			setEditName(userData.name);
+			setIsEditing(true);
+			setUpdateMessage("");
+		}
+	};
+
+	const handleCancel = () => {
+		setIsEditing(false);
+		setEditName("");
+		setUpdateMessage("");
+	};
+
+	const handleSave = async () => {
+		if (!editName().trim()) {
+			setUpdateMessage("名前を入力してください");
+			return;
+		}
+
+		setIsUpdating(true);
+		try {
+			await updateUserProfile(props.token(), editName().trim());
+			setIsEditing(false);
+			setEditName("");
+			setUpdateMessage("更新が完了しました");
+			refetch();
+		} catch (error) {
+			setUpdateMessage(
+				error instanceof Error ? error.message : "更新に失敗しました",
+			);
+		} finally {
+			setIsUpdating(false);
+		}
+	};
 
 	return (
 		<div class="min-h-screen bg-gray-100">
@@ -43,9 +93,52 @@ const UserProfile: Component<UserProfileProps> = (props) => {
 								<div class="space-y-4">
 									<div class="border-b pb-2">
 										<div class="text-sm text-gray-600">名前</div>
-										<p class="text-lg text-gray-800 font-medium">
-											{userData().name}
-										</p>
+										<Show
+											when={!isEditing()}
+											fallback={
+												<div class="space-y-2">
+													<input
+														type="text"
+														value={editName()}
+														onInput={(e) => setEditName(e.target.value)}
+														class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+														placeholder="名前を入力してください"
+														disabled={isUpdating()}
+													/>
+													<div class="flex space-x-2">
+														<button
+															type="button"
+															onClick={handleSave}
+															disabled={isUpdating()}
+															class="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors disabled:opacity-50 cursor-pointer"
+														>
+															{isUpdating() ? "保存中..." : "保存"}
+														</button>
+														<button
+															type="button"
+															onClick={handleCancel}
+															disabled={isUpdating()}
+															class="flex-1 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors disabled:opacity-50 cursor-pointer"
+														>
+															キャンセル
+														</button>
+													</div>
+												</div>
+											}
+										>
+											<div class="flex justify-between items-center">
+												<p class="text-lg text-gray-800 font-medium">
+													{userData().name}
+												</p>
+												<button
+													type="button"
+													onClick={handleEdit}
+													class="text-sm text-blue-500 hover:text-blue-700 underline cursor-pointer"
+												>
+													編集
+												</button>
+											</div>
+										</Show>
 									</div>
 									<div class="border-b pb-2">
 										<div class="text-sm text-gray-600">メールアドレス</div>
@@ -63,11 +156,22 @@ const UserProfile: Component<UserProfileProps> = (props) => {
 							)}
 						</Show>
 					</Suspense>
+					<Show when={updateMessage()}>
+						<div
+							class={`mt-4 p-3 rounded-md text-sm text-center ${
+								updateMessage() === "更新が完了しました"
+									? "bg-green-100 text-green-700"
+									: "bg-red-100 text-red-700"
+							}`}
+						>
+							{updateMessage()}
+						</div>
+					</Show>
 					<div class="mt-6 pt-4 border-t">
 						<button
 							type="button"
 							onClick={() => navigate("/", { replace: true })}
-							class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
+							class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors cursor-pointer"
 						>
 							タスク一覧に戻る
 						</button>
