@@ -1,7 +1,8 @@
 import { useNavigate } from "@solidjs/router";
 import type { Component } from "solid-js";
 import { createSignal } from "solid-js";
-import { login } from "../api";
+import { loginUser } from "../api";
+import { updateUser } from "../auth";
 import Header from "./Header";
 
 type LoginFormProps = {
@@ -18,8 +19,13 @@ const LoginForm: Component<LoginFormProps> = (props) => {
 	const handleLogin = async (e: Event) => {
 		e.preventDefault();
 		try {
-			const res = await login(email(), password());
-			props.setToken(res.token);
+			// Use the new User-based login function for better type safety
+			const user = await loginUser(email(), password());
+
+			// Update both the User state and maintain backward compatibility
+			updateUser(user);
+			props.setToken(user.token);
+
 			setError(null);
 			navigate("/", { replace: true });
 		} catch {

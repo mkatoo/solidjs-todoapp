@@ -1,7 +1,8 @@
 import { useNavigate } from "@solidjs/router";
 import type { Component } from "solid-js";
 import { createSignal } from "solid-js";
-import { register } from "../api";
+import { registerUser } from "../api";
+import { updateUser } from "../auth";
 import Header from "./Header";
 
 type RegisterFormProps = {
@@ -19,9 +20,15 @@ const RegisterForm: Component<RegisterFormProps> = (props) => {
 	const handleRegister = async (e: Event) => {
 		e.preventDefault();
 		try {
-			const res = await register(name(), email(), password());
+			// Use the new User-based registration function for better type safety
+			const user = await registerUser(name(), email(), password());
+
 			alert("登録が完了しました。");
-			props.setToken(res.token);
+
+			// Update both the User state and maintain backward compatibility
+			updateUser(user);
+			props.setToken(user.token);
+
 			setError(null);
 			navigate("/", { replace: true });
 		} catch {

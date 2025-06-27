@@ -1,5 +1,6 @@
 import { useNavigate } from "@solidjs/router";
 import { type Component, Show } from "solid-js";
+import { logout, user } from "../auth";
 
 type HeaderProps = {
 	token: () => string;
@@ -10,6 +11,8 @@ const Header: Component<HeaderProps> = (props) => {
 	const navigate = useNavigate();
 
 	const handleLogout = () => {
+		// Use the new logout function for proper cleanup
+		logout();
 		props.setToken("");
 		navigate("/login", { replace: true });
 	};

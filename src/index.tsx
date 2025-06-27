@@ -3,7 +3,7 @@ import { Route, Router } from "@solidjs/router";
 import { render } from "solid-js/web";
 
 import "./index.css";
-import { token, updateToken } from "./auth";
+import { token, updateToken, updateUser, user } from "./auth";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 import TaskList from "./components/TaskList";
